@@ -1,5 +1,6 @@
 from ctypes import sizeof
 import random
+import re
 
 
 def choose_secret(filename):
@@ -84,25 +85,37 @@ def choose_secret_advanced(filename):
 
     linea = f.readline()
     while linea != "":
-        list_words.append(linea.upper()[0]+linea.upper()[1]+linea.upper()[2]+linea.upper()[3]+linea.upper()[4])
+        if re.match('^[a-zA-Z_]+$', linea):
+          if linea[4] == "\n":
+            list_words.append(linea.upper()[0]+linea.upper()[1]+linea.upper()[2]+linea.upper()[3]+linea.upper()[4])          
         linea = f.readline()
 
     f.close()
-    
 
     random_number = random.randint(0, len(list_words)-1)
     return list_words[random_number]
 
-def check_valid_word():
+def check_valid_word(selected):
     """Dada una lista de palabras, esta función pregunta al usuario que introduzca una palabra hasta que introduzca una que esté en la lista. Esta palabra es la que devolverá la función.
     Args:
       selected: Lista de palabras.
     Returns:
       word: Palabra introducida por el usuario que está en la lista.
     """
-
+    x=0
+    wordMatching=""
+    while x!=1:
+      word = input("Introduce una nueva palabra(checkValidWord): ")
+      for selectedWord in (selected):
+        if selectedWord==word:
+          wordMatching=word
+          x=1
+    return wordMatching
 
 if __name__ == "__main__":
+    #check_valid_word(["CASA","CALLE"])
+    secret2 = choose_secret_advanced('palabras_extended.txt')
+
     secret = choose_secret('palabras_reduced.txt')
     # Debug: esto es para que sepas la palabra que debes adivinar
     print("Palabra a adivinar: "+secret)
