@@ -21,7 +21,8 @@ def choose_secret(filename):
         linea = f.readline()
 
     f.close()
-    
+    if len(list_words) == 0:
+        raise ValueError("Error el fichero no tiene palabras")
 
     random_number = random.randint(0, len(list_words)-1)
     return list_words[random_number]
@@ -37,16 +38,18 @@ def compare_words(word,secret):
     """
     same_position=[]
     same_letter=[]
-
+    if type(same_position) is not list or type(same_letter) is not list:
+        raise ValueError("Error same_position y same_letter deben ser listas")
+    if len(secret) != len(word):
+        raise ValueError("Error al comparar las palabras, tienen distinto numero de caracteres")
     for i in range(0, len(word)):
       if word[i]==secret[i]:
         same_position.append(i)
       else:
         for e in range(0, len(word)):
           if word[i]==secret[e]:
-            same_letter.append(i)
-    print(same_position)
-    print(same_letter)
+            same_letter.append(i)    
+      
     return same_position,same_letter
 
 
@@ -79,21 +82,28 @@ def choose_secret_advanced(filename):
       secret: Palabra elegida aleatoriamente de la lista de 15 seleccionadas transformada a mayúsculas
     """
     list_words = []
-    
+    list_words_randomized = []
+
     f = open(filename, mode="rt", encoding="utf-8")
 
 
     linea = f.readline()
     while linea != "":
-        if re.match('^[a-zA-Z_]+$', linea):
-          if linea[4] == "\n":
+        if re.match('^[a-zA-Z_]+$', linea) and linea[4] != "\n":
             list_words.append(linea.upper()[0]+linea.upper()[1]+linea.upper()[2]+linea.upper()[3]+linea.upper()[4])          
         linea = f.readline()
-
-    f.close()
-
-    random_number = random.randint(0, len(list_words)-1)
-    return list_words[random_number]
+    if len(list_words) < 15:
+        raise ValueError("Error el fichero no tiene 15 palabras sin acentos y de 5 caracteres")
+    else:
+      counter=0
+      while counter < 15:
+          counter = counter + 1
+          #print("len(list_words)",len(list_words))
+          random_number = random.randint(0, len(list_words)-1)
+          list_words_randomized.append(list_words[random_number])
+          list_words.remove(list_words[random_number])
+      print(list_words_randomized)
+      return list_words_randomized
 
 def check_valid_word(selected):
     """Dada una lista de palabras, esta función pregunta al usuario que introduzca una palabra hasta que introduzca una que esté en la lista. Esta palabra es la que devolverá la función.
@@ -107,16 +117,19 @@ def check_valid_word(selected):
     while x!=1:
       word = input("Introduce una nueva palabra(checkValidWord): ")
       for selectedWord in (selected):
-        if selectedWord==word:
+        if selectedWord.upper()==word.upper():
           wordMatching=word
           x=1
     return wordMatching
 
 if __name__ == "__main__":
-    #check_valid_word(["CASA","CALLE"])
-    secret2 = choose_secret_advanced('palabras_extended.txt')
 
+  try:
+    secret = choose_secret_advanced('palabras_extended.txt')
+    check_valid_word(secret)
+    
     secret = choose_secret('palabras_reduced.txt')
+    #secret = choose_secret('palabras_empty.txt')
     # Debug: esto es para que sepas la palabra que debes adivinar
     print("Palabra a adivinar: "+secret)
     for repeticiones in range(0, 6):
@@ -128,3 +141,7 @@ if __name__ == "__main__":
             print("HAS GANADO!!")
             exit()
     print("LO SIENTO, NO LA HAS ADIVINIDADO. LA PALABRA ERA "+secret)
+
+  except IndexError as e:
+    print(e)
+    

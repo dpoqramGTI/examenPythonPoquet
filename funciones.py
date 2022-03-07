@@ -8,10 +8,13 @@ def encontrar_menores(diccionario,letra):
     Returns:
       resultado: ej. ['AUNQUE','ABINAR']
     """
+    # hay que declarar la variable fuera sino si hay mas de un resultado solo devolvera el ultimo
+    resultado=[]
     for clave in diccionario:
         for palabra in diccionario[clave]:
+            print (palabra[0])
             if palabra[0] < letra:
-                resultado=[]
+                
                 resultado.append(palabra)
     return resultado
 
